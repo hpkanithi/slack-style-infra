@@ -29,9 +29,9 @@ resource "aws_launch_template" "ecs_lt" {
 
 resource "aws_autoscaling_group" "ecs_asg" {
   name                = "slack-style-ecs-asg"
-  min_size            = 2
-  max_size            = 2
-  desired_capacity    = 2
+  min_size            = 3
+  max_size            = 3
+  desired_capacity    = 3
   vpc_zone_identifier = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
 
   launch_template {
@@ -147,4 +147,38 @@ resource "aws_ecs_task_definition" "worker" {
       }
     }
   ])
+}
+
+resource "aws_ecs_service" "web" {
+  name            = "slack-style-web-svc"
+  cluster         = aws_ecs_cluster.ecs_cluster_slack.id
+  task_definition = aws_ecs_task_definition.web.arn
+  desired_count   = 2
+  launch_type     = "EC2"
+
+  network_configuration {
+    subnets         = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.web_tg.arn
+    container_name   = "web"
+    container_port   = 3000
+  }
+
+  depends_on = [aws_lb_listener.web_listener]
+}
+
+resource "aws_ecs_service" "worker" {
+  name            = "slack-style-worker-svc"
+  cluster         = aws_ecs_cluster.ecs_cluster_slack.id
+  task_definition = aws_ecs_task_definition.worker.arn
+  desired_count   = 1
+  launch_type     = "EC2"
+
+  network_configuration {
+    subnets         = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
 }
