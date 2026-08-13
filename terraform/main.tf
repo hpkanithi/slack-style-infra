@@ -47,3 +47,19 @@ resource "aws_s3_bucket_versioning" "tf_bucket_versioning" {
     status = "Enabled"
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "dlq_depth" {
+  alarm_name          = "slack-style-dlq-depth"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = "300"
+  statistic           = "Maximum"
+  threshold           = "0"
+  alarm_description   = "Fires when a message lands in the DLQ"
+
+  dimensions = {
+    QueueName = aws_sqs_queue.queue_dlq.name
+  }
+}

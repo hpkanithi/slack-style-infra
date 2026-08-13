@@ -156,6 +156,10 @@ resource "aws_ecs_service" "web" {
   desired_count   = 2
   launch_type     = "EC2"
 
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
+  availability_zone_rebalancing      = "DISABLED"
+
   network_configuration {
     subnets         = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
     security_groups = [aws_security_group.ecs_sg.id]
@@ -176,6 +180,10 @@ resource "aws_ecs_service" "worker" {
   task_definition = aws_ecs_task_definition.worker.arn
   desired_count   = 1
   launch_type     = "EC2"
+
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
+  availability_zone_rebalancing      = "DISABLED"
 
   network_configuration {
     subnets         = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id]
