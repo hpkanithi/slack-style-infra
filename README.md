@@ -2,7 +2,7 @@
 
 Infrastructure inspired by publicly documented patterns from Slack's engineering blog. This is not Slack's actual production architecture, and it isn't claimed to be. It's a small, reproducible build of the pattern behind Slack's job queue, with the substitutions explained below.
 
-Full writeup with the Slack context and what broke while building it: `[BLOG POST LINK]`
+Full writeup with the Slack context and what broke while building it: `https://main.d39nc07bloc8ib.amplifyapp.com/company1`
 
 ## What this is
 
